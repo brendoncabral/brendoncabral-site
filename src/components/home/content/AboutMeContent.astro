@@ -1,0 +1,78 @@
+---
+// Content for the "About me." section
+import Button from "../../common/Button.astro";
+
+const imdbUrl = "https://www.imdb.com/name/nm13108906/";
+---
+
+<h2 class="about-title scroll-target-title">About me.</h2>
+
+<div class="about-photo-wrap">
+  <img
+    src="/images/herophoto2.jpeg"
+    alt="Portrait of Brendon"
+    class="about-photo"
+  />
+</div>
+
+<div class="about-content scroll-target-content">
+  <p>
+    I’m a production leader working as a First Assistant Director on complex
+    fast-paced film sets. I manage large crews, coordinate departments, and
+    keep productions moving efficiently under pressure.
+  </p>
+
+  <p>
+    I bring a strong focus on <strong>clarity</strong>,
+    <strong>coordination</strong>, and <strong>execution</strong>, with
+    experience leading teams and timelines at scale. I’m focused on delivering
+    results in high-pressure environments.
+  </p>
+
+  <div class="button-group">
+    <Button
+      class="button"
+      href={imdbUrl}
+      text="View My IMDb"
+      wrapperClass="meet-me-cta-button"
+      target="_blank"
+    />
+  </div>
+</div>
+
+<style>
+  .about-title {
+    margin-bottom: 1.5rem;
+  }
+
+  .about-photo-wrap {
+    margin-bottom: 2rem;
+  }
+
+  .about-photo {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+  }
+
+  .button-group {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  /* MOBILE */
+  @media (max-width: 900px) {
+    .about-photo {
+      width: 140px;
+      height: 140px;
+    }
+
+    .about-photo-wrap {
+      margin-bottom: 1.5rem;
+    }
+  }
+</style>
