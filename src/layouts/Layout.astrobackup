@@ -6,14 +6,11 @@ import Footer from "../components/Footer.astro";
 
 interface Props {
   title?: string;
-  description?: string;
   showIndicatorOverride?: boolean;
 }
-const { title, description, showIndicatorOverride } = Astro.props;
+const { title, showIndicatorOverride } = Astro.props;
+
 const pageTitle = `${title || "Homepage"} | Brendon Cabral`;
-const pageDescription =
-  description ||
-  "Brendon Cabral is a 1st Assistant Director with experience leading film production logistics, cross-department coordination, and on-set execution.";
 
 const currentPath = Astro.url.pathname;
 const shouldShowBasedOnPath = currentPath === "/";
@@ -32,19 +29,6 @@ const showScrollIndicator =
     <link rel="apple-touch-icon" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{pageTitle}</title>
-    <meta name="description" content={pageDescription} />
-
-    <meta property="og:title" content={pageTitle} />
-    <meta property="og:description" content={pageDescription} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url.href} />
-    <meta property="og:image" content="/og-image.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={pageTitle} />
-    <meta name="twitter:description" content={pageDescription} />
-    <meta name="twitter:image" content="/og-image.png" />
-    
     <ClientRouter />
     <script is:inline>
       const isDarkMode =
