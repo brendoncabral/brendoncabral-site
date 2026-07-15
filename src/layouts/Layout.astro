@@ -12,6 +12,30 @@ const title = `${SITE_DATA.name}${pageTitle ? ` | ${pageTitle}` : ""}`;
 <!doctype html>
 <html lang="en">
 	<head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        
+        <!-- Open Graph / Facebook / LinkedIn -->
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://brendoncabral.com/og-image.png" />
+
+        <!-- Twitter / X -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content="https://brendoncabral.com/og-image.png" />
+
+        <script is:inline>
+            // HARD CODED, WONT SHOW WHEN EDITING THRU LOCALHOST
+        </script>
+    </head>
+<!--	<head> //OLD HEAD FROM TEMPLATE
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
@@ -39,7 +63,7 @@ const title = `${SITE_DATA.name}${pageTitle ? ` | ${pageTitle}` : ""}`;
 			}
 			window.localStorage.setItem('theme', theme);
 		</script>
-	</head>
+	</head> -->
 	<body>
 	    <Header />
 		<main>

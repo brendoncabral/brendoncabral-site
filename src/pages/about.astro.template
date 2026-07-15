@@ -165,7 +165,7 @@ import '../styles/about.css';
                     <p>
                         For a full curriculum vitae, see my LinkedIn profile.
                     </p>
-                    <a href={`https://linkedin.com/in/${SITE_DATA.linkedin}`}
+                    <a href={`${SITE_DATA.linkedin}`}
                        class="info-card-link"
                        target="_blank"
                        rel="noopener noreferrer"
@@ -182,8 +182,8 @@ import '../styles/about.css';
                 <h2>Contact</h2>
                 <p>
                     Collaboration enquiries, methodology debates, and Monoceros Initiative questions are welcome via
-                    <a href={`mailto:${SITE_DATA.email}`}>e-mail</a> or
-                    <a href={`https://linkedin.com/in/${SITE_DATA.linkedin}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>.
+                    <a href={`${SITE_DATA.email}`}>e-mail</a> or
+                    <a href={`${SITE_DATA.linkedin}`} target="_blank" rel="noopener noreferrer">LinkedIn</a>.
                     Specific enquiries get specific replies. Generic partnership pitches are recycled with great
                     efficiency.
                 </p>
