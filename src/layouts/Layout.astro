@@ -31,39 +31,22 @@ const title = `${SITE_DATA.name}${pageTitle ? ` | ${pageTitle}` : ""}`;
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content="https://brendoncabral.com/og-image.png" />
 
+        <!-- Theme Initialization Script -->
         <script is:inline>
-            // HARD CODED, WONT SHOW WHEN EDITING THRU LOCALHOST
+            const theme = (() => {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme) {
+                    return savedTheme;
+                }
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            })();
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
         </script>
     </head>
-<!--	<head> //OLD HEAD FROM TEMPLATE
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<meta name="description" content={description} />
-		<meta property="og:title" content={title} />
-		<meta property="og:description" content={description} />
-		<meta property="og:type" content="website" />
-		<script is:inline>
-			const theme = (() => {
-				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-					return localStorage.getItem('theme');
-				}
-				if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-					return 'dark';
-				}
-				return 'light';
-			})();
-		
-			if (theme === 'light') {
-				document.documentElement.removeAttribute('data-theme');
-			} else {
-				document.documentElement.setAttribute('data-theme', 'dark');
-			}
-			window.localStorage.setItem('theme', theme);
-		</script>
-	</head> -->
 	<body>
 	    <Header />
 		<main>

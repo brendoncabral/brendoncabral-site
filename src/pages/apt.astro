@@ -1,0 +1,411 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf5911d73";
+---
+
+<Layout pageTitle="Apartment Access">
+    <!-- Outer Header -->
+<!--    <header class="outer-header">
+        <h1 class="outer-title">Apartment Access</h1>
+        <p class="outer-subtitle">Use the button below for secured automatic buzzer door and 9th floor elevator access.</p>
+    </header> -->
+
+    <div class="page-container">
+        <div class="buzzer-card">
+            <!-- Header Title and Intro Description -->
+            <h1 class="card-title">Welcome to the crib.</h1>
+            <p class="card-description">
+                Use the button below for automatic buzzer door and elevator access.
+            </p>
+
+            <!-- Disabled Access Warning Box -->
+            <div id="no-access-box" class="no-access-box hidden">
+                <h2 class="no-access-title">Access Disabled</h2>
+                <p class="no-access-subtitle">We've turned this off right now. Please ring the buzzer traditionally for us to allow access.</p>
+            </div>
+
+            <!-- Status Box (Monochrome) -->
+            <div id="status-box" class="status-box hidden">
+                <h2 class="status-title">Access Granted</h2>
+                <p class="status-subtitle">Ring the buzzer with code <u>050</u> to get auto-buzzed in!</p>
+                <p class="status-time">Your access is valid until <strong id="time-stamp"></strong>. Head up the elevator and select the <strong>9th floor</strong>, unit number <strong>906</strong>.</p>
+                <p class="status-note">
+                    <em>If your access expires before entering the building, simply click the <strong>Gain Access Now</strong> button below again.</em>
+                </p>
+            </div>
+
+            <!-- Instructions Box -->
+            <div id="instructions-box" class="instructions-box">
+                <p class="instructions-title"><strong>How it works:</strong></p>
+                <ol class="instructions-list">
+                    <li>Click the button below.</li>
+                    <li>Ring the buzzer with code: <strong>050</strong></li>
+                    <li>Get buzzed in automatically!</li>
+                </ol>
+            </div>
+
+            <!-- Buzzer Form -->
+            <form id="buzzer-form" action={targetAction} method="POST" target="response-frame">
+                <button 
+                    type="submit" 
+                    id="submit-btn" 
+                    class="btn-primary"
+                    disabled
+                >
+                    Checking status...
+                </button>
+            </form>
+
+            <!-- Subtext under button -->
+            <p id="btn-subtext" class="btn-subtext"><em>Make sure to click this button <strong>before</strong> ringing the buzzer.</em></p>
+
+            <!-- Hidden Frame for Background Submission -->
+            <iframe name="response-frame" id="response-frame" class="hidden-frame"></iframe>
+        </div>
+    </div>
+
+    <!-- Contact Footer -->
+    <p class="contact-footer">Questions or not working? Just call us. :)</p>
+</Layout>
+
+<script>
+    const form = document.getElementById('buzzer-form') as HTMLFormElement | null;
+    const statusBox = document.getElementById('status-box');
+    const noAccessBox = document.getElementById('no-access-box');
+    const timeStampDisplay = document.getElementById('time-stamp');
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+    
+    let activeTimer: ReturnType<typeof setTimeout> | null = null;
+
+    // Check live status via Cloudflare Function proxy
+    async function checkLiveStatus() {
+        try {
+            const response = await fetch('/api/buzzer-status');
+            const data = await response.json();
+
+            if (data.isDisabled) {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Access Denied';
+                }
+                if (noAccessBox) {
+                    noAccessBox.classList.remove('hidden');
+                }
+            } else {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Gain Access Now';
+                }
+            }
+        } catch (error) {
+            // Fallback unlock if proxy check encounters issues
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Gain Access Now';
+            }
+        }
+    }
+
+    checkLiveStatus();
+
+    form?.addEventListener('submit', () => {
+        if (activeTimer) clearTimeout(activeTimer);
+
+        if (submitBtn) {
+            submitBtn.textContent = 'Unlocking...';
+            submitBtn.disabled = true;
+            setTimeout(() => {
+                submitBtn.textContent = 'Gain Access Now';
+                submitBtn.disabled = false;
+            }, 1200);
+        }
+
+        const expirationTime = new Date(Date.now() + 3 * 60 * 1000);
+
+        const day = expirationTime.getDate();
+        const month = expirationTime.toLocaleString('en-US', { month: 'short' });
+        const timeString = expirationTime.toLocaleString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit', 
+            hour12: true 
+        });
+        
+        const formattedStamp = `${timeString}`;
+
+        if (timeStampDisplay && statusBox) {
+            timeStampDisplay.textContent = formattedStamp;
+            statusBox.classList.remove('hidden');
+
+            activeTimer = setTimeout(() => {
+                statusBox.classList.add('hidden');
+            }, 180000);
+        }
+    });
+</script>
+
+<style>
+    /* Hide Header and Navigation for this page */
+/*    :global(header), :global(nav), :global(footer), :global(#footer) {
+        display: none !important;
+    }
+    /* Base Light Styles */
+    .outer-header {
+        text-align: center;
+        max-width: 600px;
+        margin: 2rem auto 0 auto;
+        padding: 0 1rem 1.5rem 1rem;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+    }
+    .outer-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: inherit;
+        margin-bottom: 0.5rem;
+    }
+    .outer-subtitle {
+        font-size: 1rem;
+        color: inherit;
+        opacity: 0.8;
+        line-height: 1.5;
+        margin-bottom: 0;
+    }
+    .page-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem 1rem 1rem 1rem;
+    }
+    .buzzer-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 1.5rem;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #1a1a1a;
+        text-align: center;
+    }
+    .card-description {
+        font-size: 0.95rem;
+        color: #4a4a4a;
+        margin-bottom: 1.25rem;
+        line-height: 1.5;
+        text-align: center;
+    }
+    .no-access-box {
+        margin-bottom: 1.25rem;
+        padding: 1rem 1.25rem;
+        background-color: #fef2f2;
+        border: 1px solid #fca5a5;
+        border-radius: 8px;
+        color: #991b1b;
+        text-align: left;
+    }
+    .no-access-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0 0 0.25rem 0;
+    }
+    .no-access-subtitle {
+        font-size: 0.9rem;
+        margin: 0;
+        line-height: 1.4;
+    }
+    .status-box {
+        margin-bottom: 1.25rem;
+        padding: 1rem 1.25rem 1.25rem 1.25rem;
+        background-color: #f3f4f6;
+        border: 1px solid #1a1a1a;
+        border-radius: 8px;
+        color: #1a1a1a;
+        text-align: left;
+    }
+    .status-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 0.25rem;
+    }
+    .status-subtitle {
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+    }
+    .status-time {
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+    .status-note {
+        font-size: 0.85rem;
+        color: #525252;
+        line-height: 1.4;
+    }
+    .instructions-box {
+        margin-bottom: 1.25rem;
+        padding: 1rem 1.25rem;
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .instructions-title {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        color: #1a1a1a;
+    }
+    .instructions-list {
+        font-size: 0.9rem;
+        color: #4a4a4a;
+        text-align: left;
+        display: inline-block;
+        padding-left: 1.25rem;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+    .instructions-list li {
+        margin-bottom: 0.25rem;
+    }
+    .instructions-list li:last-child {
+        margin-bottom: 0;
+    }
+    .btn-primary {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: background-color 0.15s ease;
+    }
+    .btn-primary:active {
+        background-color: #1a1a1a;
+    }
+    .btn-primary:disabled {
+        background-color: #8a8a8a;
+        cursor: not-allowed;
+    }
+    .btn-subtext {
+        font-size: 0.85rem;
+        color: #6a6a6a;
+        text-align: center;
+        margin-top: 0.75rem;
+    }
+    .contact-footer {
+        text-align: center;
+        font-size: 0.9rem;
+        color: inherit;
+        opacity: 0.85;
+        margin-top: 0;
+        margin-bottom: 2rem;
+    }
+    .hidden-frame {
+        display: none;
+    }
+    .hidden {
+        display: none;
+    }
+
+    /* Dark Mode Inversions via data-theme Attribute */
+    :global(html[data-theme="dark"]) .buzzer-card {
+        background: #18181b;
+        border-color: #27272a;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+    }
+    :global(html[data-theme="dark"]) .card-title {
+        color: #f4f4f5;
+    }
+    :global(html[data-theme="dark"]) .card-description {
+        color: #a1a1aa;
+    }
+    :global(html[data-theme="dark"]) .no-access-box {
+        background-color: #27272a;
+        border-color: #7f1d1d;
+        color: #fca5a5;
+    }
+    :global(html[data-theme="dark"]) .instructions-box {
+        background-color: #27272a;
+        border-color: #3f3f46;
+    }
+    :global(html[data-theme="dark"]) .instructions-title {
+        color: #f4f4f5;
+    }
+    :global(html[data-theme="dark"]) .instructions-list {
+        color: #d4d4d8;
+    }
+    :global(html[data-theme="dark"]) .btn-primary {
+        background-color: #f4f4f5;
+        color: #18181b;
+    }
+    :global(html[data-theme="dark"]) .btn-primary:disabled {
+        background-color: #3f3f46;
+        color: #a1a1aa;
+    }
+    :global(html[data-theme="dark"]) .btn-subtext {
+        color: #a1a1aa;
+    }
+    :global(html[data-theme="dark"]) .status-box {
+        background-color: #27272a;
+        border-color: #525252;
+        color: #f4f4f5;
+    }
+    :global(html[data-theme="dark"]) .status-note {
+        color: #cecece;
+    }
+
+    /* Fallback for System Preferences when no data-theme Attribute is Set */
+    @media (prefers-color-scheme: dark) {
+        :global(html:not([data-theme])) .buzzer-card {
+            background: #18181b;
+            border-color: #27272a;
+        }
+        :global(html:not([data-theme])) .card-title {
+            color: #f4f4f5;
+        }
+        :global(html:not([data-theme])) .card-description {
+            color: #a1a1aa;
+        }
+        :global(html:not([data-theme])) .no-access-box {
+            background-color: #27272a;
+            border-color: #7f1d1d;
+            color: #fca5a5;
+        }
+        :global(html:not([data-theme])) .instructions-box {
+            background-color: #27272a;
+            border-color: #3f3f46;
+        }
+        :global(html:not([data-theme])) .instructions-title {
+            color: #f4f4f5;
+        }
+        :global(html:not([data-theme])) .instructions-list {
+            color: #d4d4d8;
+        }
+        :global(html:not([data-theme])) .btn-primary {
+            background-color: #f4f4f5;
+            color: #18181b;
+        }
+        :global(html:not([data-theme])) .btn-primary:disabled {
+            background-color: #3f3f46;
+            color: #a1a1aa;
+        }
+        :global(html:not([data-theme])) .btn-subtext {
+            color: #a1a1aa;
+        }
+        :global(html:not([data-theme])) .status-box {
+            background-color: #27272a;
+            border-color: #525252;
+            color: #f4f4f5;
+        }
+        :global(html:not([data-theme])) .status-note {
+            color: #cecece;
+        }
+    }
+</style>
