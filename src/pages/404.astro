@@ -4,8 +4,45 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout pageTitle="404">
     <div class="page-container">
-        <h1>404 - Page Not Found</h1>
-        <p style="font-size: 2rem; margin: 0;">Looks like this page doesn’t exist or the link is broken.<br />
-      If this error persists, please <a href="https://letterbird.co/brendoncabral">let me know</a>.</p>
+        <div class="error-wrapper">
+            <h1 class="title-left">:(</h1>
+            <p class="error-text"><strong>404 – Page Not Found</strong></p>
+            <p class="error-text">Looks like this page doesn’t exist or the link is broken.</p>
+            <p class="error-text">If this error persists, please <a href="https://letterbird.co/brendoncabral" target="_blank" rel="noopener noreferrer">let me know</a>.</p>
+        </div>
     </div>
 </Layout>
+
+<style>
+    .page-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 4rem 1rem;
+    }
+    .error-wrapper {
+        width: 100%;
+        max-width: 480px;
+        text-align: left;
+    }
+    .title-left {
+        text-align: left;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+    }
+    .error-text {
+        margin-bottom: 1rem; /* Creates a full line of vertical space between paragraphs */
+        line-height: 1.6;
+        font-size: 1rem;
+    }
+    .error-text:last-child {
+        margin-bottom: 0;
+    }
+    .error-text a {
+        color: inherit;
+        text-decoration: underline;
+        font-weight: 600;
+    }
+</style>
+
