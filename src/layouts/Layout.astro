@@ -5,8 +5,14 @@ import { SITE_DATA } from '../constants';
 
 import '../styles/global.css';
 
-const { pageTitle, description = SITE_DATA.description } = Astro.props;
-const title = `${SITE_DATA.name}${pageTitle ? ` | ${pageTitle}` : ""}`;
+const { 
+    pageTitle, 
+    title: customTitle,
+    description = SITE_DATA.description, 
+    image = "https://brendoncabral.com/og-image.png" 
+} = Astro.props;
+
+const title = customTitle || `${SITE_DATA.name}${pageTitle ? ` | ${pageTitle}` : ""}`;
 ---
 
 <!doctype html>
@@ -23,13 +29,13 @@ const title = `${SITE_DATA.name}${pageTitle ? ` | ${pageTitle}` : ""}`;
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://brendoncabral.com/og-image.png" />
+        <meta property="og:image" content={image} />
 
         <!-- Twitter / X -->
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content="https://brendoncabral.com/og-image.png" />
+        <meta name="twitter:image" content={image} />
 
         <!-- Theme Initialization Script -->
         <script is:inline>
