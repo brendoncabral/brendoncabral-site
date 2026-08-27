@@ -78,9 +78,23 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
     const noAccessBox = document.getElementById('no-access-box');
     const timeStampDisplay = document.getElementById('time-stamp');
     const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+    const themeWrapper = document.querySelector('.theme-toggle-wrapper');
     
     let activeTimer: ReturnType<typeof setTimeout> | null = null;
     let cooldownTimer: ReturnType<typeof setTimeout> | null = null;
+
+    // Explicit event listener for the standalone theme toggle wrapper
+    themeWrapper?.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const newTheme = isDark ? 'light' : 'dark';
+
+        if (newTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+        localStorage.setItem('theme', newTheme);
+    });
 
     async function checkLiveStatus() {
         try {
@@ -170,6 +184,7 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
         top: 1rem;
         right: 1rem;
         z-index: 50;
+        cursor: pointer;
     }
 
     .page-container {
