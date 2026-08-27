@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import ThemeToggle from '../components/ThemeToggle.astro';
 
 const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf5911d73";
 ---
@@ -10,9 +9,11 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
     image="https://brendoncabral.com/apt-preview.png"
     noindex={true}
 >
-    <div class="theme-toggle-wrapper">
-        <ThemeToggle />
-    </div>
+    <!-- Outer Header -->
+<!--    <header class="outer-header">
+        <h1 class="outer-title">Apartment Access</h1>
+        <p class="outer-subtitle">Use the button below for secured automatic buzzer door and 9th floor elevator access.</p>
+    </header> -->
 
     <div class="page-container">
         <div class="buzzer-card">
@@ -80,8 +81,8 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
     const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement | null;
     
     let activeTimer: ReturnType<typeof setTimeout> | null = null;
-    let cooldownTimer: ReturnType<typeof setTimeout> | null = null;
 
+    // Check live status via Cloudflare Function proxy
     async function checkLiveStatus() {
         try {
             const response = await fetch('/api/buzzer-status');
@@ -102,6 +103,7 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
                 }
             }
         } catch (error) {
+            // Fallback unlock if proxy check encounters issues
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Gain Access Now';
@@ -111,67 +113,67 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
 
     checkLiveStatus();
 
-    form?.addEventListener('submit', (e) => {
-        if (!navigator.onLine) {
-            alert("No internet connection detected. Please check your cell signal.");
-            e.preventDefault();
-            return;
-        }
-
+    form?.addEventListener('submit', () => {
         if (activeTimer) clearTimeout(activeTimer);
-        if (cooldownTimer) clearTimeout(cooldownTimer);
 
         if (submitBtn) {
             submitBtn.textContent = 'Unlocking...';
-            submitBtn.classList.add('btn-loading');
             submitBtn.disabled = true;
+            setTimeout(() => {
+                submitBtn.textContent = 'Gain Access Now';
+                submitBtn.disabled = false;
+            }, 1200);
         }
 
-        if (statusBox) statusBox.classList.add('hidden');
+        const expirationTime = new Date(Date.now() + 3 * 60 * 1000);
 
-        setTimeout(() => {
-            if (submitBtn) {
-                submitBtn.classList.remove('btn-loading');
-                submitBtn.textContent = 'Access Granted';
-                
-                cooldownTimer = setTimeout(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Gain Access Now';
-                }, 10000);
-            }
+        const day = expirationTime.getDate();
+        const month = expirationTime.toLocaleString('en-US', { month: 'short' });
+        const timeString = expirationTime.toLocaleString('en-US', { 
+            hour: 'numeric', 
+            minute: '2-digit', 
+            hour12: true 
+        });
+        
+        const formattedStamp = `${timeString}`;
 
-            const expirationTime = new Date(Date.now() + 3 * 60 * 1000);
-            const timeString = expirationTime.toLocaleString('en-US', { 
-                hour: 'numeric', 
-                minute: '2-digit', 
-                hour12: true 
-            });
+        if (timeStampDisplay && statusBox) {
+            timeStampDisplay.textContent = formattedStamp;
+            statusBox.classList.remove('hidden');
 
-            if (timeStampDisplay && statusBox) {
-                timeStampDisplay.textContent = timeString;
-                statusBox.classList.remove('hidden');
-
-                activeTimer = setTimeout(() => {
-                    statusBox.classList.add('hidden');
-                }, 180000);
-            }
-        }, 2000);
+            activeTimer = setTimeout(() => {
+                statusBox.classList.add('hidden');
+            }, 180000);
+        }
     });
 </script>
 
 <style>
-    /* Hide site header and navigation on this page */
-    :global(header), :global(nav) {
+    /* Hide Header and Navigation for this page */
+    :global(header), :global(nav), :global(footer), :global(#footer) {
         display: none !important;
     }
-
-    .theme-toggle-wrapper {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        z-index: 50;
+    /* Base Light Styles */
+    .outer-header {
+        text-align: center;
+        max-width: 600px;
+        margin: 2rem auto 0 auto;
+        padding: 0 1rem 1.5rem 1rem;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.25);
     }
-
+    .outer-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: inherit;
+        margin-bottom: 0.5rem;
+    }
+    .outer-subtitle {
+        font-size: 1rem;
+        color: inherit;
+        opacity: 0.8;
+        line-height: 1.5;
+        margin-bottom: 0;
+    }
     .page-container {
         display: flex;
         justify-content: center;
@@ -296,14 +298,6 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
         background-color: #8a8a8a;
         cursor: not-allowed;
     }
-    .btn-primary.btn-loading {
-        animation: pulse 2s infinite alternate;
-        opacity: 0.5;
-    }
-    @keyframes pulse {
-        from { opacity: 0.5; }
-        to { opacity: 1; }
-    }
     .btn-subtext {
         font-size: 0.85rem;
         color: #6a6a6a;
@@ -325,7 +319,7 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
         display: none;
     }
 
-    /* Dark Mode Inversions */
+    /* Dark Mode Inversions via data-theme Attribute */
     :global(html[data-theme="dark"]) .buzzer-card {
         background: #18181b;
         border-color: #27272a;
@@ -377,7 +371,7 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
         color: #cecece;
     }
 
-    /* Fallback for System Preferences */
+    /* Fallback for System Preferences when no data-theme Attribute is Set */
     @media (prefers-color-scheme: dark) {
         :global(html:not([data-theme])) .buzzer-card {
             background: #18181b;
@@ -423,7 +417,7 @@ const targetAction = "https://freshbuzzer.com/code/33ff05ec-1c61-482f-b65b-55faf
             color: #f4f4f5;
         }
         :global(html:not([data-theme])) .status-title {
-            color: #a3d1a3;
+        color: #a3d1a3;
         }
         :global(html:not([data-theme])) .status-note {
             color: #cecece;
