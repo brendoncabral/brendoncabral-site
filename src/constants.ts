@@ -9,7 +9,7 @@ export const SITE_DATA = {
     name: 'Brendon Cabral',
 
     // A brief tagline describing your role or expertise (3-5 words/phrases)
-    tagline: "Precision Logistics & Operations | Production Leader",
+    tagline: "Production Leader | Precision Logistics & Operations",
 
     // Set to empty string "" to hide an icon
     twitter: "",  // bird logo → twitter.com
@@ -25,5 +25,5 @@ export const SITE_DATA = {
 
     // Base URL of your deployed site (no trailing slash), e.g. "https://your-username.github.io"
     // Used for Open Graph tags. Leave empty if you haven't deployed yet.
-    siteUrl: "https://github.com/brendoncabral/brendoncabral-site",
+    siteUrl: "https://brendoncabral.com/",
 };
